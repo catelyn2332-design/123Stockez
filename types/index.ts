@@ -62,8 +62,21 @@ export interface Photo {
   albumId: string;
   groupId: string;
   uri: string;
+  storagePath?: string;
   name: string;
   caption?: string;
   createdAt: string;
   userId: string;
+}
+
+export interface CarnetEntry {
+  id: string;
+  carnetId: string;
+  userId: string;
+  uri: string;
+  storagePath?: string;
+  name: string;
+  description: string;
+  fieldValues: { fieldId: string; value: string }[];
+  createdAt: string;
 }

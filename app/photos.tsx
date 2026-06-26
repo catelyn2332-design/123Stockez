@@ -39,13 +39,14 @@ export default function PhotosScreen() {
       return;
     }
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: 'images',
       allowsMultipleSelection: true,
       quality: 0.85,
     });
     if (!result.canceled) {
       for (const asset of result.assets) {
-        await addPhoto(user!.id, albumId, '', asset.uri, asset.fileName || `photo_${Date.now()}`);
+        const groupId = (photos[0]?.groupId) ?? '';
+        await addPhoto(user!.id, albumId, groupId, asset.uri, asset.fileName || `photo_${Date.now()}`);
       }
     }
   }, [user, albumId]);
@@ -65,7 +66,7 @@ export default function PhotosScreen() {
   const handleLongPress = useCallback((photo: Photo) => {
     showAlert('Supprimer cette photo ?', 'Cette action est irréversible.', [
       { text: 'Annuler', style: 'cancel' },
-      { text: 'Supprimer', style: 'destructive', onPress: () => removePhoto(photo.id, albumId) },
+      { text: 'Supprimer', style: 'destructive', onPress: () => removePhoto(photo.id, albumId, photo.groupId) },
     ]);
   }, [albumId]);
 

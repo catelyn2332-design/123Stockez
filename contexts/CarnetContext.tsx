@@ -1,4 +1,4 @@
-// Powered by OnSpace.AI
+// Powered by OnSpace.AI — Carnet Context (Supabase)
 import React, { createContext, useState, useCallback, ReactNode } from 'react';
 import { Carnet, CarnetEntry, CarnetField } from '@/types';
 import {
@@ -36,80 +36,59 @@ export function CarnetProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const addCarnet = useCallback(async (
-    userId: string,
-    name: string,
-    emoji: string,
-    description: string,
-    fields: CarnetField[],
+    userId: string, name: string, emoji: string, description: string, fields: CarnetField[],
   ): Promise<Carnet> => {
-    const carnet: Carnet = {
+    const draft: Carnet = {
       id: `carnet_${Date.now()}`,
-      userId,
-      name,
-      emoji,
-      description,
-      fields,
-      entryCount: 0,
+      userId, name, emoji, description, fields, entryCount: 0,
       createdAt: new Date().toISOString(),
     };
-    await saveCarnet(carnet);
-    setCarnets((prev) => [carnet, ...prev]);
-    return carnet;
+    const saved = await saveCarnet(draft);
+    setCarnets((prev) => [saved, ...prev]);
+    return saved;
   }, []);
 
   const updateCarnet = useCallback(async (carnet: Carnet) => {
-    await saveCarnet(carnet);
-    setCarnets((prev) => prev.map((c) => (c.id === carnet.id ? carnet : c)));
+    const saved = await saveCarnet(carnet);
+    setCarnets((prev) => prev.map((c) => (c.id === carnet.id ? saved : c)));
   }, []);
 
-  const removeCarnet = useCallback(async (carnetId: string, userId: string) => {
+  const removeCarnet = useCallback(async (carnetId: string, _userId: string) => {
     await deleteCarnet(carnetId);
     setCarnets((prev) => prev.filter((c) => c.id !== carnetId));
     setEntries((prev) => prev.filter((e) => e.carnetId !== carnetId));
   }, []);
 
   const addEntry = useCallback(async (
-    userId: string,
-    carnetId: string,
-    uri: string,
-    name: string,
-    description: string,
-    fieldValues: { fieldId: string; value: string }[],
+    userId: string, carnetId: string, uri: string, name: string,
+    description: string, fieldValues: { fieldId: string; value: string }[],
   ): Promise<CarnetEntry> => {
-    const entry: CarnetEntry = {
+    const draft: CarnetEntry = {
       id: `entry_${Date.now()}`,
-      carnetId,
-      userId,
-      uri,
-      name,
-      description,
-      fieldValues,
+      carnetId, userId, uri, name, description, fieldValues,
       createdAt: new Date().toISOString(),
     };
-    await saveCarnetEntry(entry);
-    setEntries((prev) => [entry, ...prev]);
+    const saved = await saveCarnetEntry(draft);
+    setEntries((prev) => [saved, ...prev]);
     setCarnets((prev) =>
-      prev.map((c) =>
-        c.id === carnetId
-          ? { ...c, entryCount: c.entryCount + 1, coverPhoto: c.coverPhoto ?? uri }
-          : c
+      prev.map((c) => c.id === carnetId
+        ? { ...c, entryCount: c.entryCount + 1, coverPhoto: c.coverPhoto ?? saved.uri }
+        : c
       )
     );
-    return entry;
+    return saved;
   }, []);
 
   const updateEntry = useCallback(async (entry: CarnetEntry) => {
-    await saveCarnetEntry(entry);
-    setEntries((prev) => prev.map((e) => (e.id === entry.id ? entry : e)));
+    const saved = await saveCarnetEntry(entry);
+    setEntries((prev) => prev.map((e) => (e.id === entry.id ? saved : e)));
   }, []);
 
   const removeEntry = useCallback(async (entryId: string, carnetId: string) => {
     await deleteCarnetEntry(entryId, carnetId);
     setEntries((prev) => prev.filter((e) => e.id !== entryId));
     setCarnets((prev) =>
-      prev.map((c) =>
-        c.id === carnetId ? { ...c, entryCount: Math.max(0, c.entryCount - 1) } : c
-      )
+      prev.map((c) => c.id === carnetId ? { ...c, entryCount: Math.max(0, c.entryCount - 1) } : c)
     );
   }, []);
 

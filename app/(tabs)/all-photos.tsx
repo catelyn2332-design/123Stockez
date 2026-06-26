@@ -47,7 +47,7 @@ export default function AllPhotosScreen() {
         onPress: () =>
           showAlert('Supprimer cette photo ?', 'Cette action est irréversible.', [
             { text: 'Annuler', style: 'cancel' },
-            { text: 'Supprimer', style: 'destructive', onPress: () => removePhoto(photo.id, photo.albumId) },
+            { text: 'Supprimer', style: 'destructive', onPress: () => removePhoto(photo.id, photo.albumId, photo.groupId) },
           ]),
       },
     ]);
