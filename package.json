@@ -103,7 +103,7 @@
     "expo-speech": "~13.1.7",
     "expo-splash-screen": "~0.30.8",
     "expo-sqlite": "^15.2.13",
-    "expo-status-bar": "~2.2.3",
+    "expo-status-bar": "~57.0.1",
     "expo-store-review": "~8.1.5",
     "expo-symbols": "~0.4.5",
     "expo-system-ui": "~5.0.8",
